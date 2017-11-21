@@ -212,10 +212,6 @@ extension AudioPlayer {
             updateNowPlayingInfoCenter()
             return
         }
-        guard player?.currentItem?.status == .readyToPlay else {
-            completionHandler(false)
-            return
-        }
         player?.seek(to: CMTime(timeInterval: time), toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter,
                      completionHandler: { [weak self] finished in
                         completionHandler(finished)
