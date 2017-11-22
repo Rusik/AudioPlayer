@@ -16,13 +16,24 @@ extension AudioPlayer {
     public func resume() {
         //Ensure pause flag is no longer set
         pausedForInterruption = false
-        
+
         player?.rate = rate
 
         //We don't wan't to change the state to Playing in case it's Buffering. That
         //would be a lie.
         if !state.isPlaying && !state.isBuffering {
             state = .playing
+        }
+
+        //If we change to `.playing` before buffering is complete we should change
+        //`stateBeforeBuffering` to `.playing` to start play immediately after buffering has completed
+        if state.isBuffering {
+            stateBeforeBuffering = .playing
+        }
+
+        //Same logic as for `state.isBuffering` above
+        if state.isWaitingForConnection {
+            stateWhenConnectionLost = .playing
         }
 
         retryEventProducer.startProducingEvents()
@@ -41,13 +52,13 @@ extension AudioPlayer {
         //app is in foreground.
         backgroundHandler.beginBackgroundTask()
     }
-    
+
     /// Starts playing the current item immediately. Works on iOS/tvOS 10+ and macOS 10.12+
     func playImmediately() {
         if #available(iOS 10.0, tvOS 10.0, OSX 10.12, *) {
             self.state = .playing
             player?.playImmediately(atRate: rate)
-            
+
             retryEventProducer.stopProducingEvents()
             backgroundHandler.endBackgroundTask()
         }
@@ -201,7 +212,7 @@ extension AudioPlayer {
 }
 
 extension AudioPlayer {
-    
+
     fileprivate func seekSafely(to time: TimeInterval,
               toleranceBefore: CMTime = kCMTimePositiveInfinity,
               toleranceAfter: CMTime = kCMTimePositiveInfinity,

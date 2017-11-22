@@ -7,6 +7,14 @@
 //
 
 extension AudioPlayer {
+
+    /// Boolean value indicating whether the player should resume playing (after buffering)
+    var shouldResumePlaying: Bool {
+        return !state.isPaused &&
+            !(stateWhenConnectionLost?.isPaused ?? false) &&
+            !(stateBeforeBuffering?.isPaused ?? false)
+    }
+
     /// Handles player events.
     ///
     /// - Parameters:
@@ -49,7 +57,7 @@ extension AudioPlayer {
         case .loadedMoreRange:
             if let currentItem = currentItem, let currentItemLoadedRange = currentItemLoadedRange {
                 delegate?.audioPlayer(self, didLoad: currentItemLoadedRange, for: currentItem)
-                
+
                 if bufferingStrategy == .playWhenPreferredBufferDurationFull && state == .buffering,
                     let currentItemLoadedAhead = currentItemLoadedAhead,
                     currentItemLoadedAhead.isNormal,
@@ -65,7 +73,6 @@ extension AudioPlayer {
                 //changed even though it's playing (happens mostly at the first play though).
                 if state.isBuffering || state.isPaused {
                     if shouldResumePlaying {
-                        stateBeforeBuffering = nil
                         state = .playing
                         player?.rate = rate
                     } else {
@@ -84,7 +91,6 @@ extension AudioPlayer {
         case .readyToPlay:
             //There is enough data in the buffer
             if shouldResumePlaying {
-                stateBeforeBuffering = nil
                 state = .playing
                 player?.rate = rate
             } else {
