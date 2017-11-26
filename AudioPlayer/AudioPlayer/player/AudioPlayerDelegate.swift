@@ -64,6 +64,14 @@ public protocol AudioPlayerDelegate: class {
     ///   - range: The time range that the audio player loaded.
     ///   - item: Current item.
     func audioPlayer(_ audioPlayer: AudioPlayer, didLoad range: TimeRange, for item: AudioItem)
+
+    /// This method gets called when the current item seekable time ranges has been found or updated.
+    ///
+    /// - Parameters:
+    ///   - audioPlayer: The audio player.
+    ///   - ranges: Seekable time ranges.
+    ///   - item: Current item.
+    func audioPlayer(_ audioPlayer: AudioPlayer, didUpdateSeekableTimeRanges ranges: [TimeRange], for item: AudioItem)
 }
 
 public extension AudioPlayerDelegate {
@@ -79,4 +87,6 @@ public extension AudioPlayerDelegate {
     func audioPlayer(_ audioPlayer: AudioPlayer, didUpdateEmptyMetadataOn item: AudioItem, withData data: Metadata) {}
 
     func audioPlayer(_ audioPlayer: AudioPlayer, didLoad range: TimeRange, for item: AudioItem) {}
+
+    func audioPlayer(_ audioPlayer: AudioPlayer, didUpdateSeekableTimeRanges ranges: [TimeRange], for item: AudioItem) {}
 }

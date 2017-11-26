@@ -66,6 +66,27 @@ extension AudioPlayer {
                 }
             }
 
+        case .loadedSeekableTimeRanges(let ranges):
+            if let currentItem = currentItem {
+                let timeRanges = ranges.flatMap { range -> TimeRange? in
+                    if let earliest = range.start.ap_timeIntervalValue, let latest = range.end.ap_timeIntervalValue {
+                        return (earliest, latest)
+                    } else {
+                        return nil
+                    }
+                }
+
+                delegate?.audioPlayer(self, didUpdateSeekableTimeRanges: timeRanges, for: currentItem)
+
+                // For live HLS streams there is no duration metadata
+                // So we should update duration property with seekable time ranges
+                if player?.currentItem?.duration.ap_timeIntervalValue == nil, let duration = currentItemDuration {
+                    delegate?.audioPlayer(self, didFindDuration: duration, for: currentItem)
+                }
+
+                updateNowPlayingInfoCenter()
+            }
+
         case .progressed(let time):
             if let currentItemProgression = time.ap_timeIntervalValue, let item = player?.currentItem,
                 item.status == .readyToPlay {
@@ -134,8 +155,8 @@ extension AudioPlayer {
             }
             backgroundHandler.beginBackgroundTask()
 
-        default:
-            break
+        case .interruptionBegan: ()
+        case .interruptionEnded: ()
         }
     }
 }

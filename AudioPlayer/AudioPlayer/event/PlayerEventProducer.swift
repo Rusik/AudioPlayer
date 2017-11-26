@@ -21,7 +21,8 @@ private extension AVPlayer {
             "currentItem.status",
             "status",
             "currentItem.loadedTimeRanges",
-            "currentItem.timedMetadata"]
+            "currentItem.timedMetadata",
+            "currentItem.seekableTimeRanges"]
     }
 }
 
@@ -68,6 +69,7 @@ class PlayerEventProducer: NSObject, EventProducer {
         case loadedMoreRange(earliest: CMTime, latest: CMTime)
         case loadedMetadata(metadata: [AVMetadataItem])
         case loadedDuration(duration: CMTime)
+        case loadedSeekableTimeRanges(ranges: [CMTimeRange])
         case progressed(time: CMTime)
         case endedPlaying(error: Error?)
         case interruptionBegan
@@ -220,6 +222,11 @@ class PlayerEventProducer: NSObject, EventProducer {
             case "currentItem.timedMetadata":
                 if let metadata = currentItem.timedMetadata {
                     eventListener?.onEvent(PlayerEvent.loadedMetadata(metadata: metadata), generetedBy: self)
+                }
+
+            case "currentItem.seekableTimeRanges":
+                if let timeRanges = currentItem.seekableTimeRanges as? [CMTimeRange] {
+                    eventListener?.onEvent(PlayerEvent.loadedSeekableTimeRanges(ranges: timeRanges), generetedBy: self)
                 }
 
             default:
