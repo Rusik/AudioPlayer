@@ -23,7 +23,9 @@ extension AudioPlayer {
         }
         // For live HLS streams there is no duration metadata
         // But we can take it from seekabale time range
-        if let duration = currentItemSeekableRange?.latest {
+        if player?.currentItem?.seekableTimeRanges.count != 0,
+            let duration = currentItemSeekableRange?.latest
+        {
             return duration
         }
         return nil
