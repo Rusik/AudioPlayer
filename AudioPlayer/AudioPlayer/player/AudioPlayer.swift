@@ -110,6 +110,7 @@ public class AudioPlayer: NSObject {
 
                 if #available(iOS 10.0, tvOS 10.0, OSX 10.12, *) {
                     playerItem.preferredForwardBufferDuration = self.preferredForwardBufferDuration
+                    playerItem.audioTimePitchAlgorithm = self.audioTimePitchAlgorithm
                 }
 
                 //Creates new player
@@ -233,6 +234,10 @@ public class AudioPlayer: NSObject {
     /// Defines the preferred size of the forward buffer for the underlying `AVPlayerItem`.
     /// Works on iOS/tvOS 10+, default is 0, which lets `AVPlayer` decide.
     public var preferredForwardBufferDuration = TimeInterval(0)
+
+    /// Indicates the processing algorithm used to manage audio pitch at varying rates and for scaled audio edits.
+    /// Constants for various time pitch algorithms, e.g. AVAudioTimePitchSpectral, are defined in AVAudioProcessingSettings.h.
+    public var audioTimePitchAlgorithm = AVAudioTimePitchAlgorithm.lowQualityZeroLatency
 
     /// Defines how to behave when the user is seeking through the lockscreen or the control center.
     ///
@@ -405,6 +410,7 @@ public class AudioPlayer: NSObject {
         //Nothing strategy-specific yet
         if #available(iOS 10.0, tvOS 10.0, OSX 10.12, *) {
             playerItem.preferredForwardBufferDuration = self.preferredForwardBufferDuration
+            playerItem.audioTimePitchAlgorithm = self.audioTimePitchAlgorithm
         }
     }
 }
