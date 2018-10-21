@@ -21,5 +21,4 @@ Pod::Spec.new do |s|
   s.osx.exclude_files = 'AudioPlayer/AudioPlayer/utils/MPNowPlayingInfoCenter+AudioItem.swift'
 
   s.swift_version = '4.0'
-
 end
